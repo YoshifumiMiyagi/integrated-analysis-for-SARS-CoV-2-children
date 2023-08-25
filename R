@@ -1,1 +1,3 @@
-
+raw <- read.csv('Dataset_case_unhealthy_healthy.csv',header=T,row.names=1)
+Raw <- data.frame(t(raw))
+dat <- Raw[as.numeric(noquote(Raw$Age)) <=6,]
