@@ -1,0 +1,26 @@
+df <- read.csv('Flontier_all_AG.csv',header=T,row.names=1)
+DEG47 <- read.csv('DEG_FCanalysis_47.csv',header=T,row.names=1)
+Int2 <- intersect(colnames(df), rownames(DEG47))
+Lis <- append(Int2, "Group")
+Df <- df[,Lis]
+
+#Fold-change
+func <- function(c){
+res2 <- median(Df[,c][Df$Group==2])-median(Df[,c][Df$Group==0])
+genename <- colnames(Df)[c]
+Res <- cbind(genename,res2)
+return(Res)
+}
+logFC <- sapply(List,func)
+L_t <- data.frame(t(logFC))
+colnames(L_t)=c('gene','logFC')
+
+Func <-function(c){
+result <- wilcox.test(Df[,c], Df$Group, correct=FALSE)
+genename <- colnames(Df)[c]
+res1 <- result$p.value
+Res <- cbind(genename,res1)
+return(Res)}
+S_t <- data.frame(t(sapply(List,Func)))
+colnames(L_t)=c('gene','logFC')
+colnames(S_t)=c('gene','P')
