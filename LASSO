@@ -5,11 +5,20 @@ DEG_Group <- append(rownames(DEG_dis), "Group")
 Int_4 <- intersect(colnames(Df), DEG_Group)
 DF <- Df[,Int_4]
 
+# Blom function
+library(rcompanion)
+L<-seq(2,453,1)
+func <- function(c){
+    res <- blom(DF[,c],method='blom')
+    return(res)
+}
+DF_blom <- data.frame(sapply(L,func))
+
 # LASSO
 library(glmnet)
-lasso.model <- glmnet(x = DF[,1:452], y = DF[,453], family = "gaussian", alpha = 1)
+lasso.model <- glmnet(x = DF_blom, y = DF[,1], family = "gaussian", alpha = 1)
 LASSO <- as.data.frame(as.matrix(lasso.model$beta))
-rownames(LASSO) <- colnames(DF[,1:452])
+rownames(LASSO) <- colnames(DF[,2:453])
 
 rownames(LASSO[LASSO$s1 > 0,])
 rownames(LASSO[LASSO$s25 > 0,])
