@@ -1,0 +1,69 @@
+df <- read.csv('Flontier_all_AG.csv',header=T,row.names=1)
+Df <- df[(df$Group==2 | df$Group==1),]
+DEG_dis <- read.csv('FCanalysis_discoverypanel.csv',header=T,row.names=1)
+DEG_Group <- append(rownames(DEG_dis), "Group")
+Int_4 <- intersect(colnames(Df), DEG_Group)
+DF <- Df[,Int_4]
+
+library(rcompanion)
+L<-seq(2,453,1)
+func <- function(c){
+    res <- blom(DF[,c],method='blom')
+    return(res)
+}
+DF_blom <- data.frame(sapply(L,func))
+colnames(DF_blom) <- colnames(DF[,2:453])
+
+#Logistic_regression
+library(tidyverse)
+group_LR <- DF$Group %>% str_replace_all(c("2" = "0"))
+group_LR <- as.numeric(noquote(group_LR))
+DF_blom$Group <- group_LR
+DF_B <- DF_blom[(DF_blom$Group==0)|(DF_blom$Group==1),]
+
+# uni
+Func <- function(c){
+D_glm <- glm(DF_B$Group~DF_B[,c],data=DF_B,family=binomial)
+coe<- coef(summary(D_glm))
+OR <- exp(coe[,1][2])
+ORlow <- exp(coe[,1][2]-1.96*coe[,2][2])
+ORup <- exp(coe[,1][2]+1.96*coe[,2][2])
+Pvalue<- coe[,4][2]
+result <- rbind(OR,ORlow,ORup,Pvalue)
+return(result)
+}
+multi <- sapply(L,Func)
+M <- data.frame(t(multi))
+colnames(M) <- c('OR','95%LCI','95%UCI','Pvalue')
+rownames(M) <- colnames(DF_blom[1:6])
+write.csv(M,'DEG_limma6_LR.csv',quote=F)
+
+# Backward elimination
+clu_1 <- c("ALS2","ATP6V0C","DDX27","DOCK8","GEMIN8","GOLGA2","HIVEP2","LAMB1","PLLP","POLG","PPP1R9A","SAMD13","SASH1","SHC1","TMPRSS3","WBP11","ZNF354B","ZNF532")
+
+#Backward_elimination
+D_glm_6 <- glm(Group ~ ALS2+ATP6V0C+DDX27+DOCK8+GEMIN8+GOLGA2+HIVEP2+LAMB1+PLLP+POLG+PPP1R9A+SAMD13+SASH1+SHC1+TMPRSS3+WBP11+ZNF354B+ZNF532,data=DF_B,family=binomial, alpha = 0.1)
+s <- step(D_glm_6,direction='backward',trace=TRUE)
+
+           
+#clu_1 ALS2+ATP6V0C+DDX27+DOCK8+GEMIN8+GOLGA2+HIVEP2+LAMB1+PLLP+POLG+PPP1R9A+SAMD13+SASH1+SHC1+TMPRSS3+WBP11+ZNF354B+ZNF532
+library(logistf)
+D_firth_clu1=logistf(formula=Group ~ ALS2+ATP6V0C+DDX27+DOCK8+GEMIN8+GOLGA2+HIVEP2+LAMB1+PLLP+POLG+PPP1R9A+SAMD13+SASH1+SHC1+TMPRSS3+WBP11+ZNF354B+ZNF532, family=binomial, data=DF_B, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE, alpha = 0.1)
+fitb_clu1<-backward(D_firth_clu1)
+
+############### Firth α setting
+
+model <- lm(Sepal.Length ~ . -Species, iris)
+model
+str(model)
+
+attr(model$terms, "factors")
+row <- rownames(attr(model$terms, "factors"))
+col <- colnames(attr(model$terms, "factors"))
+
+coefs <- model$coefficients
+coefs[names(coefs) != "(Intercept)"]
+
+formula(paste("Sepal.Length ~ ", paste(col, collapse="+")))
+as.formula(model)
+
