@@ -1,0 +1,130 @@
+df <- read.csv('Flontier_all_AG.csv',header=T,row.names=1)
+
+V <- df
+# "ALS2","ATP6V0C","DDX27","DOCK8","GEMIN8","GOLGA2","HIVEP2","LAMB1","PLLP","POLG","PPP1R9A","SAMD13","SASH1","SHC1","TMPRSS3","WBP11","ZNF354B","ZNF532"
+
+
+library(beeswarm)
+ALS2_1 <- V[(V$Group == 1),]$ALS2
+ALS2_2 <- V[(V$Group == 2),]$ALS2
+ATP6V0C_1 <- V[(V$Group == 1),]$ATP6V0C
+ATP6V0C_2 <- V[(V$Group == 2),]$ATP6V0C
+DDX27_1 <- V[(V$Group == 1),]$DDX27
+DDX27_2 <- V[(V$Group == 2),]$DDX27
+GEMIN8_1 <- V[(V$Group == 1),]$GEMIN8
+GEMIN8_2 <- V[(V$Group == 2),]$GEMIN8
+DOCK8_1 <- V[(V$Group == 1),]$DOCK8
+DOCK8_2 <- V[(V$Group == 2),]$DOCK8
+GOLGA2_1 <- V[(V$Group == 1),]$GOLGA2
+GOLGA2_2 <- V[(V$Group == 2),]$GOLGA2
+HIVEP2_1 <- V[(V$Group == 1),]$HIVEP2
+HIVEP2_2 <- V[(V$Group == 2),]$HIVEP2
+LAMB1_1 <- V[(V$Group == 1),]$LAMB1
+LAMB1_2 <- V[(V$Group == 2),]$LAMB1
+PLLP_1 <- V[(V$Group == 1),]$PLLP
+PLLP_2 <- V[(V$Group == 2),]$PLLP
+POLG_1 <- V[(V$Group == 1),]$POLG
+POLG_2 <- V[(V$Group == 2),]$POLG
+PPP1R9A_1 <- V[(V$Group == 1),]$PPP1R9A
+PPP1R9A_2 <- V[(V$Group == 2),]$PPP1R9A
+SAMD13_1 <- V[(V$Group == 1),]$SAMD13
+SAMD13_2 <- V[(V$Group == 2),]$SAMD13
+SASH1_1 <- V[(V$Group == 1),]$SASH1
+SASH1_2 <- V[(V$Group == 2),]$SASH1
+SHC1_1 <- V[(V$Group == 1),]$SHC1
+SHC1_2 <- V[(V$Group == 2),]$SHC1
+TMPRSS3_1 <- V[(V$Group == 1),]$TMPRSS3
+TMPRSS3_2 <- V[(V$Group == 2),]$TMPRSS3
+WBP11_1 <- V[(V$Group == 1),]$WBP11
+WBP11_2 <- V[(V$Group == 2),]$WBP11
+ZNF354B_1 <- V[(V$Group == 1),]$ZNF354B
+ZNF354B_2 <- V[(V$Group == 2),]$ZNF354B
+ZNF532_1 <- V[(V$Group == 1),]$ZNF532
+ZNF532_2 <- V[(V$Group == 2),]$ZNF532
+
+
+
+
+tiff('beeswarm_Exemplar_1 Gene.tiff',width = 900, height = 900)
+par(mfrow=c(3,3))
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ALS2_1,ALS2_2, main = "(A) ALS2",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(ALS2_1,ALS2_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ATP6V0C_1,ATP6V0C_2, main = "(B) ATP6V0C",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,6), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(ATP6V0C_1,ATP6V0C_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(DDX27_1,DDX27_2, main = "(C) DDX27",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(DDX27_1,DDX27_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(GEMIN8_1,GEMIN8_2, main = "(D) GEMIN8",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,8), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(GEMIN8_1,GEMIN8_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(DOCK8_1,DOCK8_2, main = "(E) DOCK8",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(DOCK8_1,DOCK8_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(GOLGA2_1,GOLGA2_2, main = "(F) GOLGA2",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(3,15), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(GOLGA2_1,GOLGA2_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(HIVEP2_1,HIVEP2_2, main = "(G) HIVEP2",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(HIVEP2_1,HIVEP2_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(LAMB1_1,LAMB1_2, main = "(H) LAMB1",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,8), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(LAMB1_1,LAMB1_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(PLLP_1,PLLP_2, main = "(I) PLLP",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(PLLP_1,PLLP_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+dev.off()
+
+
+
+tiff('beeswarm_Exemplar_2 Gene.tiff',width = 900, height = 900)
+par(mfrow=c(3,3))
+
+par(mar=c(8, 5, 4, 2))
+boxplot(POLG_1,POLG_2, main = "(A) POLG",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(POLG_1,POLG_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(PPP1R9A_1,PPP1R9A_2, main = "(B) PPP1R9A",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,8), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(PPP1R9A_1,PPP1R9A_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(SAMD13_1,SAMD13_2, main = "(C) SAMD13",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,8), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(SAMD13_1,SAMD13_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(SASH1_1,SASH1_2, main = "(D) SASH1",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(SASH1_1,SASH1_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(SHC1_1,SHC1_2, main = "(E) SHC1",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(SHC1_1,SHC1_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(TMPRSS3_1,TMPRSS3_2, main = "(F) TMPRSS3",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,8), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(TMPRSS3_1,TMPRSS3_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(WBP11_1,WBP11_2, main = "(G) WBP11",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(WBP11_1,WBP11_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ZNF354B_1,ZNF354B_2, main = "(H) ZNF354B",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(0,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(ZNF354B_1,ZNF354B_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ZNF532_1,ZNF532_2, main = "(I) ZNF532",ylab = "LogCPM",names =  c("Unhealthy","Case"),ylim=c(2,10), cex.main = 3,cex.names = 3,cex.lab=2.3,font=1,cex.axis=2.3,las=2)
+beeswarm(list(ZNF532_1,ZNF532_2),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+
+dev.off()
