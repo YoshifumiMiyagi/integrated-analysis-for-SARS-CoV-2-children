@@ -67,3 +67,8 @@ coefs[names(coefs) != "(Intercept)"]
 formula(paste("Sepal.Length ~ ", paste(col, collapse="+")))
 as.formula(model)
 
+################ Firth 2
+DF_B$Age <- df[(df$Group==2 | df$Group==1),]$Age
+
+D_firth_clu2=logistf(formula=Group ~ ALS2+ATP6V0C+DDX27+DOCK8+GEMIN8+GOLGA2+HIVEP2+LAMB1+PLLP+POLG+PPP1R9A+SAMD13+SASH1+SHC1+TMPRSS3+WBP11+ZNF354B+ZNF532+Age, family=binomial, data=DF_B, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE, alpha = 0.1)
+fitb_clu2 <- backward(D_firth_clu2,scope=list(lower=DF_B$Group ~ Age))
