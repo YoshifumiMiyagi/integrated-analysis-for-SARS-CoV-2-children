@@ -1,0 +1,73 @@
+library(sva)
+library(edgeR)
+
+DIS <- read.csv('Discovery_panel.csv',header=T,row.names=1)
+REP <- read.csv('Repllication_panel.csv',header=T,row.names=1)
+
+# Discovery_panel_analysis
+BATCH_D <- DIS$Batch
+GROUP_D <- DIS$Group
+dis_C <- t(DIS)
+count <- as.matrix(dis_C[7:17620,])
+adjusted_counts <- ComBat_seq(count, batch=BATCH_D,group=GROUP_D)
+design <- model.matrix(~0+factor(GROUP_D))
+count <- adjusted_counts
+keep <- rowSums(cpm(count)>1) > dim(dis_C)[2]*0.5
+d <- DGEList(counts=count)
+counts <- d[keep, , keep.lib.sizes=FALSE]
+v <- voomWithQualityWeights(counts, plot=TRUE, normalize="quantile", design=design)
+colnames(design) <- c("C_Case","C_Ctrl")
+contrasts <- makeContrasts(C_Case-C_Ctrl, levels=design)
+fit <- lmFit(v,design)
+fit2 <- contrasts.fit(fit,contrasts)
+fit2 <- eBayes(fit2)
+CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
+DEG_dis <- CC[(abs(CC$logFC)>2 & CC$adj.P.Val < 0.05),]
+DEG466 <- rownames(DEG_dis)
+DF <- data.frame(t(v$E))[,DEG466]
+
+# Replication_panel_analysis
+BATCH_R <- REP$Batch
+GROUP_R <- REP$Group
+Int <- intersect(colnames(REP), DEG466)  
+rep_C <- t(REP)[Int,]
+count <- as.matrix(rep_C)
+adjusted_counts <- ComBat_seq(count, batch=BATCH_R,group=GROUP_R)
+design <- model.matrix(~0+factor(GROUP_R))
+count <- adjusted_counts
+keep <- rowSums(cpm(count)>1) > dim(rep_C)[2]*0.5
+d <- DGEList(counts=count)
+counts <- d[keep, , keep.lib.sizes=FALSE]
+v <- voomWithQualityWeights(counts, plot=TRUE, normalize="quantile", design=design)
+colnames(design) <- c("C_Case","C_Ctrl")
+contrasts <- makeContrasts(C_Case-C_Ctrl, levels=design)
+fit <- lmFit(v,design)
+fit2 <- contrasts.fit(fit,contrasts)
+fit2 <- eBayes(fit2)
+CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
+DEG_rep <- CC[(abs(CC$logFC)>2 & CC$adj.P.Val < 0.05),] 
+
+# Blom function
+
+df <- read.csv('Flontier_all_AG.csv',header=T,row.names=1)
+Df <- df[(df$Group==2 | df$Group==1),]
+DEG_Group <- append(rownames(DEG_rep), "Group")
+Int_4 <- intersect(colnames(Df), DEG_Group)
+DF <- Df[,Int_4]
+
+library(rcompanion)
+L<-seq(2,49,1)
+func <- function(c){
+    res <- blom(DF[,c],method='blom')
+    return(res)
+}
+DF_blom <- data.frame(sapply(L,func))
+
+# LASSO
+library(glmnet)
+lasso.model <- glmnet(x = DF_blom, y = DF[,1], family = "gaussian", alpha = 1)
+LASSO <- as.data.frame(as.matrix(lasso.model$beta))
+rownames(LASSO) <- colnames(DF[,2:49])
+
+rownames(LASSO[LASSO$s1 > 0,])
+rownames(LASSO[LASSO$s25 > 0,])
