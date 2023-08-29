@@ -1,0 +1,243 @@
+df <- read.csv('Flontier_all_AG.csv',header=T,row.names=1)
+V <- df
+
+library(beeswarm)
+ARHGAP39_C <- V[(V$Group == 2),]$ARHGAP39
+ARHGAP39_H <- V[(V$Group == 0),]$ARHGAP39
+BAIAP3_C <- V[(V$Group == 2),]$BAIAP3
+BAIAP3_H <- V[(V$Group == 0),]$BAIAP3
+CCDC78_C <- V[(V$Group == 2),]$CCDC78
+CCDC78_H <- V[(V$Group == 0),]$CCDC78
+CFAP126_C <- V[(V$Group == 2),]$CFAP126
+CFAP126_H <- V[(V$Group == 0),]$CFAP126
+COLCA2_C <- V[(V$Group == 2),]$COLCA2
+COLCA2_H <- V[(V$Group == 0),]$COLCA2
+CRIP2_C <- V[(V$Group == 2),]$CRIP2
+CRIP2_H <- V[(V$Group == 0),]$CRIP2
+CTXN1_C <- V[(V$Group == 2),]$CTXN1
+CTXN1_H <- V[(V$Group == 0),]$CTXN1
+DNAAF3_C <- V[(V$Group == 2),]$DNAAF3
+DNAAF3_H <- V[(V$Group == 0),]$DNAAF3
+DNAJB13_C <- V[(V$Group == 2),]$DNAJB13
+DNAJB13_H <- V[(V$Group == 0),]$DNAJB13
+FAM83E_C <- V[(V$Group == 2),]$FAM83E
+FAM83E_H <- V[(V$Group == 0),]$FAM83E
+ITGB8_C <- V[(V$Group == 2),]$ITGB8
+ITGB8_H <- V[(V$Group == 0),]$ITGB8
+LTF_C <- V[(V$Group == 2),]$LTF
+LTF_H <- V[(V$Group == 0),]$LTF
+MAP6_C <- V[(V$Group == 2),]$MAP6
+MAP6_H <- V[(V$Group == 0),]$MAP6
+MEF2A_C <- V[(V$Group == 2),]$MEF2A
+MEF2A_H <- V[(V$Group == 0),]$MEF2A
+MOSPD2_C <- V[(V$Group == 2),]$MOSPD2
+MOSPD2_H <- V[(V$Group == 0),]$MOSPD2
+PLLP_C <- V[(V$Group == 2),]$PLLP
+PLLP_H <- V[(V$Group == 0),]$PLLP
+PUSL1_C <- V[(V$Group == 2),]$PUSL1
+PUSL1_H <- V[(V$Group == 0),]$PUSL1
+RSPH1_C <- V[(V$Group == 2),]$RSPH1
+RSPH1_H <- V[(V$Group == 0),]$RSPH1
+TBPL1_C <- V[(V$Group == 2),]$TBPL1
+TBPL1_H <- V[(V$Group == 0),]$TBPL1
+TSNAXIP1_C <- V[(V$Group == 2),]$TSNAXIP1
+TSNAXIP1_H <- V[(V$Group == 0),]$TSNAXIP1
+ZDHHC21_C <- V[(V$Group == 2),]$ZDHHC21
+ZDHHC21_H <- V[(V$Group == 0),]$ZDHHC21
+ZNF143_C <- V[(V$Group == 2),]$ZNF143
+ZNF143_H <- V[(V$Group == 0),]$ZNF143
+
+##############################
+
+tiff('beeswarm_1.tiff',width = 1600, height = 2000)
+par(mfrow=c(4,2))
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ARHGAP39_H,ARHGAP39_C, main = "(A) ARHGAP39",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(ARHGAP39_H,ARHGAP39_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(BAIAP3_H,BAIAP3_C, main = "(B) BAIAP3",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(BAIAP3_H,BAIAP3_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(CCDC78_H,CCDC78_C, main = "(C) CCDC78",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(CCDC78_H,CCDC78_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(CFAP126_H,CFAP126_C, main = "(D) CFAP126",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names= 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(CFAP126_H,CFAP126_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(COLCA2_H,COLCA2_C, main = "(E) COLCA2",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(COLCA2_H,COLCA2_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(CRIP2_H,CRIP2_C, main = "(F) CRIP2",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(CRIP2_H,CRIP2_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(CTXN1_H,CTXN1_C, main = "(G) CTXN1",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(CTXN1_H,CTXN1_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(DNAAF3_H,DNAAF3_C, main = "(H) DNAAF3",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(DNAAF3_H,DNAAF3_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+dev.off()
+####################################
+
+##############################
+
+tiff('beeswarm_2.tiff',width = 1600, height = 2000)
+par(mfrow=c(4,2))
+
+par(mar=c(8, 5, 4, 2))
+boxplot(DNAJB13_H,DNAJB13_C, main = "(I) DNAJB13",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(DNAJB13_H,DNAJB13_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(FAM83E_H,FAM83E_C, main = "(J) FAM83E",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(FAM83E_H,FAM83E_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ITGB8_H,ITGB8_C, main = "(K) ITGB8",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(ITGB8_H,ITGB8_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(LTF_H,LTF_C, main = "(L) LTF",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names= 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(LTF_H,LTF_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(MAP6_H,MAP6_C, main = "(M) MAP6",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(MAP6_H,MAP6_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+
+
+par(mar=c(8, 5, 4, 2))
+boxplot(MEF2A_H,MEF2A_C, main = "(N) MEF2A",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(MEF2A_H,MEF2A_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(MOSPD2_H,MOSPD2_C, main = "(O) MOSPD2",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(MOSPD2_H,MOSPD2_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(PLLP_H,PLLP_C, main = "(P) PLLP",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(PLLP_H,PLLP_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+dev.off()
+####################################
+
+##############################
+
+tiff('beeswarm_3.tiff',width = 1600, height = 1500)
+par(mfrow=c(3,2))
+
+par(mar=c(8, 5, 4, 2))
+boxplot(PUSL1_H,PUSL1_C, main = "(Q) PUSL1",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(PUSL1_H,PUSL1_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(RSPH1_H,RSPH1_C, main = "(R) RSPH1",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(RSPH1_H,RSPH1_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(TBPL1_H,TBPL1_C, main = "(S) TBPL1",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(TBPL1_H,TBPL1_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"*",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(TSNAXIP1_H,TSNAXIP1_C, main = "(T) TSNAXIP1",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names= 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(TSNAXIP1_H,TSNAXIP1_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ZDHHC21_H,ZDHHC21_C, main = "(U) ZDHHC21",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(ZDHHC21_H,ZDHHC21_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(ZNF143_H,ZNF143_C, main = "(V) ZNF143",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(ZNF143_H,ZNF143_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+lines(c(1,2),c(12.5,12.5))
+text(1.5,13,"***",cex=5)
+
+dev.off()
+####################################
