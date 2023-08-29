@@ -97,35 +97,3 @@ rownames(M) <- LIST22
 write.csv(M,'LASSO22_Firth_log10.csv',quote=F)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Func <- function(c){
-D_glm <- glm(DF_B$Group~DF_B[,c],data=DF_B,family=binomial)
-coe<- coef(summary(D_glm))
-OR <- exp(coe[,1][2])
-ORlow <- exp(coe[,1][2]-1.96*coe[,2][2])
-ORup <- exp(coe[,1][2]+1.96*coe[,2][2])
-Pvalue<- coe[,4][2]
-result <- rbind(OR,ORlow,ORup,Pvalue)
-return(result)
-}
-L22 <- seq(1,22,1)
-multi <- sapply(L,Func)
-M <- data.frame(t(multi))
-colnames(M) <- c('OR','95%LCI','95%UCI','Pvalue')
-rownames(M) <- colnames(DF_blom[1:22])
-write.csv(M,'DEG47_LR_Cluster.csv',quote=F)
