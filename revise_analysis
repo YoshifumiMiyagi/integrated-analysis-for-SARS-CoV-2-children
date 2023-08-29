@@ -62,12 +62,70 @@ func <- function(c){
     return(res)
 }
 DF_blom <- data.frame(sapply(L,func))
+colnames(DF_blom) <- colnames(DF[,2:49])
 
 # LASSO
 library(glmnet)
 lasso.model <- glmnet(x = DF_blom, y = DF[,1], family = "gaussian", alpha = 1)
 LASSO <- as.data.frame(as.matrix(lasso.model$beta))
 rownames(LASSO) <- colnames(DF[,2:49])
+LIST22 <- rownames(LASSO[LASSO$s87 > 0,])
 
-rownames(LASSO[LASSO$s1 > 0,])
-rownames(LASSO[LASSO$s25 > 0,])
+# Firth Logistic regression
+library(logistf)
+DF_B <- cbind(DF_blom[,LIST22],DF[,1])
+colnames(DF_B)[23] <- c('Group')
+
+library(tidyverse)
+group_LR <- DF_B$Group %>% str_replace_all(c("1" = "0","2" = "1"))
+group_LR <- as.numeric(noquote(group_LR))
+DF_B$Group <- group_LR
+
+firth_result=function(c){
+res_f=logistf(DF_B$Group~DF_B[,c], family=binomial, data=DF_B, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+OR=round(log10(exp(res_f$ coefficients[2])),2)
+LowerCL=round(log10(exp(res_f$ ci.lower[2])),2)
+UpperCL=round(log10(exp(res_f$ ci.upper[2])),2)
+Pvalue=res_f$ prob[2]
+result=cbind(OR,LowerCL,UpperCL,Pvalue)
+return(result)
+}
+L22 <- seq(1,22,1)
+multi <- sapply(L22,firth_result)
+M <- data.frame(t(multi))
+rownames(M) <- LIST22
+write.csv(M,'LASSO22_Firth_log10.csv',quote=F)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Func <- function(c){
+D_glm <- glm(DF_B$Group~DF_B[,c],data=DF_B,family=binomial)
+coe<- coef(summary(D_glm))
+OR <- exp(coe[,1][2])
+ORlow <- exp(coe[,1][2]-1.96*coe[,2][2])
+ORup <- exp(coe[,1][2]+1.96*coe[,2][2])
+Pvalue<- coe[,4][2]
+result <- rbind(OR,ORlow,ORup,Pvalue)
+return(result)
+}
+L22 <- seq(1,22,1)
+multi <- sapply(L,Func)
+M <- data.frame(t(multi))
+colnames(M) <- c('OR','95%LCI','95%UCI','Pvalue')
+rownames(M) <- colnames(DF_blom[1:22])
+write.csv(M,'DEG47_LR_Cluster.csv',quote=F)
