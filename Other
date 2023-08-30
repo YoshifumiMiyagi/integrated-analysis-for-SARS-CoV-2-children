@@ -26,10 +26,10 @@ dev.off()
 tiff('beeswarm_MAP6.tiff',width = 1200, height = 600)
 par(mfrow=c(1,2))
 
-MAP6_C_D <- DIS_vE[(GROUP_D == 2),]$MAP6
-MAP6_H_D <- DIS_vE[(GROUP_D == 1),]$MAP6
-MAP6_C_R <- REP_vE[(GROUP_R == 2),]$MAP6
-MAP6_H_R <- REP_vE[(GROUP_R == 1),]$MAP6
+MAP6_C_D <- DIS_vE[(GROUP_D == 1),]$MAP6
+MAP6_H_D <- DIS_vE[(GROUP_D == 2),]$MAP6
+MAP6_C_R <- REP_vE[(GROUP_R == 1),]$MAP6
+MAP6_H_R <- REP_vE[(GROUP_R == 2),]$MAP6
 
 par(mar=c(8, 5, 4, 2))
 boxplot(MAP6_H_D,MAP6_C_D, main = "(A) Discovery",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
