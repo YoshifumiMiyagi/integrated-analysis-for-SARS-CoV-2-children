@@ -20,3 +20,27 @@ B<- theme(panel.background = element_rect(fill = 'white'), text = element_text(s
 C<- theme_classic(base_size = 40)
 A+C+B
 dev.off()
+
+############# check
+
+tiff('beeswarm_MAP6.tiff',width = 1200, height = 600)
+par(mfrow=c(1,2))
+
+MAP6_C_D <- DIS_vE[(GROUP_D == 2),]$MAP6
+MAP6_H_D <- DIS_vE[(GROUP_D == 1),]$MAP6
+MAP6_C_R <- REP_vE[(GROUP_R == 2),]$MAP6
+MAP6_H_R <- REP_vE[(GROUP_R == 1),]$MAP6
+
+par(mar=c(8, 5, 4, 2))
+boxplot(MAP6_H_D,MAP6_C_D, main = "(A) Discovery",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(MAP6_H_D,MAP6_C_D),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(MAP6_H_R,MAP6_C_R, main = "(B) Replicaion",ylab = "LogCPM",ylim=c(0,15), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(MAP6_H_R,MAP6_C_R),col = c("blue", "red"),method = "square", pch = 20,add = TRUE)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
+
+dev.off()
