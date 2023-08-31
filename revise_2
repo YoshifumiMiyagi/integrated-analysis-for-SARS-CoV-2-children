@@ -53,12 +53,12 @@ library(glmnet)
 lasso.model <- glmnet(x = DF_blom, y = DF[,51], family = "gaussian", alpha = 1)
 LASSO <- as.data.frame(as.matrix(lasso.model$beta))
 rownames(LASSO) <- colnames(DF[,1:50])
-LIST23 <- rownames(LASSO[LASSO$s88 > 0,])
+LASSO31 <- rownames(LASSO[LASSO$s90 > 0,])
 
 # Firth Logistic regression
 library(logistf)
-DF_B <- cbind(DF_blom[,LIST23],DF[,51])
-colnames(DF_B)[24] <- c('Group')
+DF_B <- cbind(DF_blom[,LASSO31],DF[,51])
+colnames(DF_B)[32] <- c('Group')
 
 library(tidyverse)
 group_LR <- DF_B$Group %>% str_replace_all(c("2" = "0"))
@@ -74,13 +74,24 @@ Pvalue=res_f$ prob[2]
 result=cbind(OR,LowerCL,UpperCL,Pvalue)
 return(result)
 }
-L23 <- seq(1,23,1)
-multi <- sapply(L23,firth_result)
+L31 <- seq(1,31,1)
+multi <- sapply(L31,firth_result)
 M <- data.frame(t(multi))
-rownames(M) <- LIST23
-write.csv(M,'LASSO23_Firth_log10.csv',quote=F)
+rownames(M) <- LASSO31
+write.csv(M,'LASSO31_Firth_log10.csv',quote=F)
 
+# Backward elimination
+clu_2 <- c("ADIPOR2","AMMECR1","BAIAP3","C1orf116","CCDC81","CCS","CFAP126","CRIP2","DMTN","DPP7","DZIP1L","ESPN","FAM214A","FBXO38","FRMPD2","FSCN1","FUZ","HSCB","LRRC10B","MLLT3","NFE2L3","OSGIN2","OTUD6B","RGPD5","RSPH1","SFN","TBPL1","TSNAXIP1","UBXN6","USP32","YIPF4")
 
+#Backward_elimination
+D_glm_2 <- glm(Group ~ ADIPOR2+AMMECR1+BAIAP3+C1orf116+CCDC81+CCS+CFAP126+CRIP2+DMTN+DPP7+DZIP1L+ESPN+FAM214A+FBXO38+FRMPD2+FSCN1+FUZ+HSCB+LRRC10B+MLLT3+NFE2L3+OSGIN2+OTUD6B+RGPD5+RSPH1+SFN+TBPL1+TSNAXIP1+UBXN6+USP32+YIPF4,data=DF_B,family=binomial)
+s <- step(D_glm_2,direction='backward',trace=TRUE)
+
+           
+#clu_1 ALS2+ATP6V0C+DDX27+DOCK8+GEMIN8+GOLGA2+HIVEP2+LAMB1+PLLP+POLG+PPP1R9A+SAMD13+SASH1+SHC1+TMPRSS3+WBP11+ZNF354B+ZNF532
+library(logistf)
+D_firth_clu2=logistf(formula=Group ~ ADIPOR2+AMMECR1+BAIAP3+C1orf116+CCDC81+CCS+CFAP126+CRIP2+DMTN+DPP7+DZIP1L+ESPN+FAM214A+FBXO38+FRMPD2+FSCN1+FUZ+HSCB+LRRC10B+MLLT3+NFE2L3+OSGIN2+OTUD6B+RGPD5+RSPH1+SFN+TBPL1+TSNAXIP1+UBXN6+USP32+YIPF4, family=binomial, data=DF_B, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu2<-backward(D_firth_clu2)
 
 
 
