@@ -1,0 +1,279 @@
+DEG50 <- rownames(DEG_rep)
+DF50 <- DF[,DEG50]
+DF50b <- DF_blom[,DEG50]
+DF_blom$Group <- group_LR
+
+library(cluster)
+library(factoextra)
+tiff('elbow_revise_blom.tiff',width =600,height=600,units='px')
+fviz_nbclust(DF50b, kmeans, method = "wss")
+dev.off()
+
+tiff('elbow_revise.tiff',width =600,height=600,units='px')
+fviz_nbclust(DF50, kmeans, method = "wss")
+dev.off()
+
+# Hierarchical clustering
+dx <- dist(t(DF50))
+rc <- hclust(d=dx,method='ward.D')
+tiff('dendrogram_revise.tiff',width =1000,height=600,units='px')
+plot(rc,cex=2)
+rect.hclust(rc, k=4, border=1:4)
+dev.off()
+
+# Backward elimination
+clu_1 <- c('DZIP1L','CCDC81','LRRC10B','CTXN1','TSNAXIP1','FRMPD2','CCDC78','DNAAF3','MAP6')
+clu_2 <- c('FSCN1','HSCB','ESPN','PUSL1','FUZ','DNAJB13','ARHGAP39','COLCA2','MAPK15','BAIAP3','CFAP126','LTF')
+clu_3 <- c('RSPH1','TPPP3','SFN','PLLP','UBXN6','ITGB5','DMTN','DPP7','CRIP2','FAM83E')
+clu_4 <- c('FAM214A','ITGB8','C1orf116','FBXO38','NFE2L3','MEF2A','YIPF4','ADIPOR2','CCS',
+           'OTUD6B','MLLT3','RGPD5','TBPL1','ZDHHC21','AMMECR1','ZNF143','USP32','OSGIN2','MOSPD2')
+           
+#clu_1 DZIP1L+CCDC81+LRRC10B+CTXN1+TSNAXIP1+FRMPD2+CCDC78+DNAAF3+MAP6
+#clu_2 FSCN1+HSCB+ESPN+PUSL1+FUZ+DNAJB13+ARHGAP39+COLCA2+MAPK15+BAIAP3+CFAP126+LTF
+#clu_3 RSPH1+TPPP3+SFN+PLLP+UBXN6+ITGB5+DMTN+DPP7+CRIP2+FAM83E
+#clu_4 FAM214A+ITGB8+C1orf116+FBXO38+NFE2L3+MEF2A+YIPF4+ADIPOR2+CCS+OTUD6B+MLLT3+RGPD5+TBPL1+ZDHHC21+AMMECR1+ZNF143+USP32+OSGIN2+MOSPD2
+
+library(logistf)
+D_firth_clu1=logistf(formula=Group ~ DZIP1L+CCDC81+LRRC10B+CTXN1+TSNAXIP1+FRMPD2+CCDC78+DNAAF3+MAP6, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu1<-backward(D_firth_clu1)
+
+D_firth_clu2=logistf(formula=Group ~ FSCN1+HSCB+ESPN+PUSL1+FUZ+DNAJB13+ARHGAP39+COLCA2+MAPK15+BAIAP3+CFAP126+LTF, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu2<-backward(D_firth_clu2)
+
+D_firth_clu3=logistf(formula=Group ~ RSPH1+TPPP3+SFN+PLLP+UBXN6+ITGB5+DMTN+DPP7+CRIP2+FAM83E, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu3<-backward(D_firth_clu3)
+
+D_firth_clu4=logistf(formula=Group ~ FAM214A+ITGB8+C1orf116+FBXO38+NFE2L3+MEF2A+YIPF4+ADIPOR2+CCS+OTUD6B+MLLT3+RGPD5+TBPL1+ZDHHC21+AMMECR1+ZNF143+USP32+OSGIN2+MOSPD2, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu4 <-backward(D_firth_clu4)
+
+D_firth_final=logistf(formula=Group ~ TSNAXIP1+CCDC78+DNAAF3+FSCN1+PUSL1+FUZ+DNAJB13+PLLP+MEF2A+CCS+RGPD5, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_final <-backward(D_firth_final)
+
+#ROC_AUC
+res_all_1=logistf(formula=Group ~ CCDC78+CCS+RGPD5, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_CCDC78=logistf(formula=Group ~ CCDC78, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_CCS=logistf(formula=Group ~ CCS, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_RGPD5=logistf(formula=Group ~ RGPD5, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+
+#ROC_AUC
+res_all_2=logistf(formula=Group ~ FAM214A+PUSL1, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_FAM214A=logistf(formula=Group ~ FAM214A, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_PUSL1=logistf(formula=Group ~ PUSL1, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+
+library(ROCR)
+# Calculate predicted probabilities for the test data
+prob_all_2 <- predict(res_all_2, newdata = DF_blom, type = "link")
+prob_all_2 <- exp(prob_all_2) / (1 + exp(prob_all_2))
+pred_all_2 <- prediction(prob_all_2, DF_blom$Group)
+auc_all_2 <- performance(pred_all_2, measure = "auc")@y.values[[1]]
+roc_all_2 <- performance(pred_all_2, measure = "tpr", x.measure = "fpr")
+
+prob_FAM214A <- predict(res_FAM214A, newdata = DF_blom, type = "link")
+prob_FAM214A <- exp(prob_FAM214A) / (1 + exp(prob_FAM214A))
+pred_FAM214A <- prediction(prob_FAM214A, DF_blom$Group)
+auc_FAM214A <- performance(pred_FAM214A, measure = "auc")@y.values[[1]]
+roc_FAM214A <- performance(pred_FAM214A, measure = "tpr", x.measure = "fpr")
+
+prob_PUSL1 <- predict(res_PUSL1, newdata = DF_blom, type = "link")
+prob_PUSL1 <- exp(prob_PUSL1) / (1 + exp(prob_PUSL1))
+pred_PUSL1<- prediction(prob_PUSL1, DF_blom$Group)
+auc_PUSL1<- performance(pred_PUSL1, measure = "auc")@y.values[[1]]
+roc_PUSL1<- performance(pred_PUSL1, measure = "tpr", x.measure = "fpr")
+
+tiff('ROC_AUC_reviese_2.tiff',width = 1800, height = 600)
+par(mfrow=c(1,3))
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_FAM214A, main = "(A) FAM214A",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_FAM214A,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_PUSL1, main = "(B) PUSL1",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_PUSL1,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_all_2, main = "(C) The final two genes",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_all_2,4), "\n"), col="red",cex=2)
+
+dev.off()
+
+########################## ROC 
+library(ROCR)
+# Calculate predicted probabilities for the test data
+prob_all_1 <- predict(res_all_1, newdata = DF_blom, type = "link")
+prob_all_1 <- exp(prob_all_1) / (1 + exp(prob_all_1))
+pred_all_1 <- prediction(prob_all_1, DF_blom$Group)
+auc_all_1 <- performance(pred_all_1, measure = "auc")@y.values[[1]]
+roc_all_1 <- performance(pred_all_1, measure = "tpr", x.measure = "fpr")
+
+prob_CCDC78 <- predict(res_CCDC78, newdata = DF_blom, type = "link")
+prob_CCDC78 <- exp(prob_CCDC78) / (1 + exp(prob_CCDC78))
+pred_CCDC78 <- prediction(prob_CCDC78, DF_blom$Group)
+auc_CCDC78 <- performance(pred_CCDC78, measure = "auc")@y.values[[1]]
+roc_CCDC78 <- performance(pred_CCDC78, measure = "tpr", x.measure = "fpr")
+
+prob_CCS <- predict(res_CCS, newdata = DF_blom, type = "link")
+prob_CCS <- exp(prob_CCS) / (1 + exp(prob_CCS))
+pred_CCS<- prediction(prob_CCS, DF_blom$Group)
+auc_CCS<- performance(pred_CCS, measure = "auc")@y.values[[1]]
+roc_CCS<- performance(pred_CCS, measure = "tpr", x.measure = "fpr")
+
+prob_RGPD5 <- predict(res_RGPD5, newdata = DF_blom, type = "link")
+prob_RGPD5 <- exp(prob_RGPD5) / (1 + exp(prob_RGPD5))
+pred_RGPD5<- prediction(prob_RGPD5, DF_blom$Group)
+auc_RGPD5<- performance(pred_RGPD5, measure = "auc")@y.values[[1]]
+roc_RGPD5<- performance(pred_RGPD5, measure = "tpr", x.measure = "fpr")
+
+tiff('ROC_AUC_reviese_1.tiff',width = 1200, height = 1200)
+par(mfrow=c(2,2))
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_CCDC78, main = "(A) CCDC78",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_CCDC78,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_CCS, main = "(B) CCS",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_CCS,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_RGPD5, main = "(C) RGPD5",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_RGPD5,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_all_1, main = "(D) The final three genes",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_all_1,4), "\n"), col="red",cex=2)
+
+dev.off()
+
+
+########################## ROC_LASSO3
+
+#ROC_AUC
+res_all_3=logistf(formula=Group ~ ADIPOR2+FAM214A+MLLT3, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_ADIPOR2=logistf(formula=Group ~ ADIPOR2, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_FAM214A=logistf(formula=Group ~ FAM214A, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_MLLT3=logistf(formula=Group ~ MLLT3, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+library(ROCR)
+# Calculate predicted probabilities for the test data
+prob_all_3 <- predict(res_all_3, newdata = DF_blom, type = "link")
+prob_all_3 <- exp(prob_all_3) / (1 + exp(prob_all_3))
+pred_all_3 <- prediction(prob_all_3, DF_blom$Group)
+auc_all_3 <- performance(pred_all_3, measure = "auc")@y.values[[1]]
+roc_all_3 <- performance(pred_all_3, measure = "tpr", x.measure = "fpr")
+
+prob_ADIPOR2 <- predict(res_ADIPOR2, newdata = DF_blom, type = "link")
+prob_ADIPOR2<- exp(prob_ADIPOR2) / (1 + exp(prob_ADIPOR2))
+pred_ADIPOR2 <- prediction(prob_ADIPOR2, DF_blom$Group)
+auc_ADIPOR2 <- performance(pred_ADIPOR2, measure = "auc")@y.values[[1]]
+roc_ADIPOR2 <- performance(pred_ADIPOR2, measure = "tpr", x.measure = "fpr")
+
+prob_FAM214A <- predict(res_FAM214A, newdata = DF_blom, type = "link")
+prob_FAM214A <- exp(prob_FAM214A) / (1 + exp(prob_FAM214A))
+pred_FAM214A <- prediction(prob_FAM214A, DF_blom$Group)
+auc_FAM214A <- performance(pred_FAM214A, measure = "auc")@y.values[[1]]
+roc_FAM214A <- performance(pred_FAM214A, measure = "tpr", x.measure = "fpr")
+
+prob_MLLT3 <- predict(res_MLLT3, newdata = DF_blom, type = "link")
+prob_MLLT3 <- exp(prob_MLLT3) / (1 + exp(prob_MLLT3))
+pred_MLLT3<- prediction(prob_MLLT3, DF_blom$Group)
+auc_MLLT3<- performance(pred_MLLT3, measure = "auc")@y.values[[1]]
+roc_MLLT3<- performance(pred_MLLT3, measure = "tpr", x.measure = "fpr")
+
+tiff('ROC_AUC_reviese_3.tiff',width = 1200, height = 1200)
+par(mfrow=c(2,2))
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_ADIPOR2, main = "(A) ADIPOR2",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_ADIPOR2,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_FAM214A, main = "(B) FAM214A",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_FAM214A,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_MLLT3, main = "(C) MLLT3",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_MLLT3,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_all_3, main = "(D) The final three genes_LASSO",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_all_3,4), "\n"), col="red",cex=2)
+
+dev.off()
+
+##################################
+LASSO discovery_456genes revise
+##################################
+
+DIS <- read.csv('Discovery_panel.csv',header=T,row.names=1)
+REP <- read.csv('Repllication_panel.csv',header=T,row.names=1)
+
+# Discovery_panel_analysis
+BATCH_D <- DIS$Batch
+GROUP_D <- DIS$Group
+dis_C <- t(DIS)
+count <- as.matrix(dis_C[7:17620,])
+adjusted_counts <- ComBat_seq(count, batch=BATCH_D,group=GROUP_D)
+design <- model.matrix(~0+factor(GROUP_D))
+count <- adjusted_counts
+keep <- rowSums(cpm(count)>1) > dim(dis_C)[2]*0.5
+d <- DGEList(counts=count)
+counts <- d[keep, , keep.lib.sizes=FALSE]
+v <- voomWithQualityWeights(counts, plot=TRUE, normalize="quantile", design=design)
+colnames(design) <- c("C_Case","C_Ctrl")
+contrasts <- makeContrasts(C_Case-C_Ctrl, levels=design)
+fit <- lmFit(v,design)
+fit2 <- contrasts.fit(fit,contrasts)
+fit2 <- eBayes(fit2)
+CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
+DEG_dis <- CC[(abs(CC$logFC)>2 & CC$adj.P.Val < 0.05),]
+DEG466 <- rownames(DEG_dis)
+DF <- data.frame(t(v$E))[,DEG466]
+
+library(rcompanion)
+L<-seq(1,466,1)
+func <- function(c){
+    res <- blom(DF[,c],method='blom')
+    return(res)
+}
+DF_blom_dis <- data.frame(sapply(L,func))
+colnames(DF_blom_dis) <- colnames(DF)
+
+# LASSO
+library(glmnet)
+DF_blom_dis$Group <- GROUP_D
+lasso.model_dis <- glmnet(x = DF_blom_dis[,1:466], y = DF_blom_dis[,467], family = "gaussian", alpha = 1)
+LASSO_dis <- as.data.frame(as.matrix(lasso.model_dis$beta))
+rownames(LASSO_dis) <- colnames(DF_blom_dis[,1:466])
+LASSO_dis_30 <- rownames(LASSO[LASSO$s75 > 0,])　　　# DEG30
+
+# Replication_panel_analysis
+BATCH_R <- REP$Batch
+GROUP_R <- REP$Group
+Int <- intersect(colnames(REP), LASSO_dis_30)  
+rep_C <- t(REP)[Int,]
+count <- as.matrix(rep_C)
+adjusted_counts <- ComBat_seq(count, batch=BATCH_R,group=GROUP_R)
+design <- model.matrix(~0+factor(GROUP_R))
+count <- adjusted_counts
+keep <- rowSums(cpm(count)>1) > dim(rep_C)[2]*0.5
+d <- DGEList(counts=count)
+counts <- d[keep, , keep.lib.sizes=FALSE]
+v <- voomWithQualityWeights(counts, plot=TRUE, normalize="quantile", design=design)
+colnames(design) <- c("C_Case","C_Ctrl")
+contrasts <- makeContrasts(C_Case-C_Ctrl, levels=design)
+fit <- lmFit(v,design)
+fit2 <- contrasts.fit(fit,contrasts)
+fit2 <- eBayes(fit2)
+CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
+DEG_rep <- CC[(abs(CC$logFC)>2 & CC$adj.P.Val < 0.05),] 
