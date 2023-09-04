@@ -16,9 +16,9 @@ dev.off()
 # Hierarchical clustering
 dx <- dist(t(DF50))
 rc <- hclust(d=dx,method='ward.D')
-tiff('dendrogram_revise.tiff',width =1000,height=600,units='px')
+tiff('dendrogram_revise_5.tiff',width =1000,height=600,units='px')
 plot(rc,cex=2)
-rect.hclust(rc, k=4, border=1:4)
+rect.hclust(rc, k=5, border=1:5)
 dev.off()
 
 # Backward elimination
@@ -277,3 +277,58 @@ fit2 <- contrasts.fit(fit,contrasts)
 fit2 <- eBayes(fit2)
 CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
 DEG_rep <- CC[(abs(CC$logFC)>2 & CC$adj.P.Val < 0.05),] 
+
+#################### PLLP####################
+
+res_PLLP=logistf(formula=Group ~ PLLP, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+prob_PLLP <- predict(res_PLLP, newdata = DF_blom, type = "link")
+prob_PLLP <- exp(prob_PLLP) / (1 + exp(prob_PLLP))
+pred_PLLP <- prediction(prob_PLLP, DF_blom$Group)
+auc_PLLP <- performance(pred_PLLP, measure = "auc")@y.values[[1]]
+roc_PLLP <- performance(pred_PLLP, measure = "tpr", x.measure = "fpr")
+
+tiff('ROC_AUC_reviese_PLLP.tiff',width = 600, height = 600)
+par(mfrow=c(1,1))
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_PLLP, main = "(A) PLLP",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.35,0.7, paste0("AUC:", round(auc_PLLP,4), "\n"), col="red",cex=2)
+
+dev.off()
+
+
+############################ 
+
+# Backward elimination
+clu_1 <- c('DZIP1L','CCDC81','LRRC10B','CTXN1','TSNAXIP1','FRMPD2','CCDC78','DNAAF3','MAP6')
+clu_2 <- c('FSCN1','HSCB','ESPN','PUSL1','FUZ','DNAJB13','ARHGAP39','COLCA2','MAPK15','BAIAP3','CFAP126','LTF')
+clu_3 <- c('RSPH1','TPPP3','SFN','PLLP','UBXN6','ITGB5','DMTN','DPP7','CRIP2','FAM83E')
+clu_4 <- c('FAM214A','ITGB8','C1orf116','FBXO38','NFE2L3','MEF2A','YIPF4','ADIPOR2')
+clu_5 <- c('CCS','OTUD6B','MLLT3','RGPD5','TBPL1','ZDHHC21','AMMECR1','ZNF143','USP32','OSGIN2','MOSPD2')
+           
+#clu_1 DZIP1L+CCDC81+LRRC10B+CTXN1+TSNAXIP1+FRMPD2+CCDC78+DNAAF3+MAP6
+#clu_2 FSCN1+HSCB+ESPN+PUSL1+FUZ+DNAJB13+ARHGAP39+COLCA2+MAPK15+BAIAP3+CFAP126+LTF
+#clu_3 RSPH1+TPPP3+SFN+PLLP+UBXN6+ITGB5+DMTN+DPP7+CRIP2+FAM83E
+#clu_4 FAM214A+ITGB8+C1orf116+FBXO38+NFE2L3+MEF2A+YIPF4+ADIPOR2
+#clu_5 CCS+OTUD6B+MLLT3+RGPD5+TBPL1+ZDHHC21+AMMECR1+ZNF143+USP32+OSGIN2+MOSPD2
+
+library(logistf)
+D_firth_clu1=logistf(formula=Group ~ DZIP1L+CCDC81+LRRC10B+CTXN1+TSNAXIP1+FRMPD2+CCDC78+DNAAF3+MAP6, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu1<-backward(D_firth_clu1)
+
+D_firth_clu2=logistf(formula=Group ~ FSCN1+HSCB+ESPN+PUSL1+FUZ+DNAJB13+ARHGAP39+COLCA2+MAPK15+BAIAP3+CFAP126+LTF, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu2<-backward(D_firth_clu2)
+
+D_firth_clu3=logistf(formula=Group ~ RSPH1+TPPP3+SFN+PLLP+UBXN6+ITGB5+DMTN+DPP7+CRIP2+FAM83E, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu3<-backward(D_firth_clu3)
+
+D_firth_clu4=logistf(formula=Group ~ FAM214A+ITGB8+C1orf116+FBXO38+NFE2L3+MEF2A+YIPF4+ADIPOR2, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu4 <-backward(D_firth_clu4)
+
+D_firth_clu5=logistf(formula=Group ~ CCS+OTUD6B+MLLT3+RGPD5+TBPL1+ZDHHC21+AMMECR1+ZNF143+USP32+OSGIN2+MOSPD2, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_clu5 <-backward(D_firth_clu5)
+
+D_firth_final=logistf(formula=Group ~ DNAAF3+FSCN1+PLLP+ITGB8+MLLT3, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+fitb_final <-backward(D_firth_final)
+
