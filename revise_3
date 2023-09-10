@@ -255,12 +255,14 @@ DF_blom_dis$Group <- GROUP_D
 lasso.model_dis <- glmnet(x = DF_blom_dis[,1:466], y = DF_blom_dis[,467], family = "gaussian", alpha = 1)
 LASSO_dis <- as.data.frame(as.matrix(lasso.model_dis$beta))
 rownames(LASSO_dis) <- colnames(DF_blom_dis[,1:466])
-LASSO_dis_30 <- rownames(LASSO_dis[LASSO_dis$s75 > 0,])　　　# DEG30
+L_coef <- data.frame(LASSO_dis[LASSO_dis$s75 > 0,][,76])
+rownames(L_coef) <- rownames(LASSO_dis[LASSO_dis$s75>0,])
+LASSO_dis_28 <- rownames(L_coef)
 
 # Replication_panel_analysis
 BATCH_R <- REP$Batch
 GROUP_R <- REP$Group
-Int <- intersect(colnames(REP), LASSO_dis_30)  
+Int <- intersect(colnames(REP), LASSO_dis_28)  
 rep_C <- t(REP)[Int,]
 count <- as.matrix(rep_C)
 adjusted_counts <- ComBat_seq(count, batch=BATCH_R,group=GROUP_R)
