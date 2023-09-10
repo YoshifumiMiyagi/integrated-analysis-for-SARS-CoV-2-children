@@ -44,3 +44,16 @@ labs <-  c("Healthy subjects","SARS-CoV-2")
 text(c(1,2),c(-2,-2),labels=labs,cex=5,srt=0,xpd=TRUE)
 
 dev.off()
+
+
+##################### correlation plot ################################
+
+library(corrplot)
+list48 <- rownames(read.csv('Supple_table_1.csv',header=T,row.names=1))
+
+DFcor <- DF_blom[,list48][,rc$order]
+res_spearman <- cor(DFcor, method = "spearman")
+
+png(height=2000, width=2000, pointsize=15, file="corrplot.png")
+corrplot(corr = res_spearman, type="upper", addCoef.col="black" )
+dev.off()
