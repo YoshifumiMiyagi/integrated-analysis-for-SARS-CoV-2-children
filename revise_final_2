@@ -1,0 +1,169 @@
+
+library(logistf)
+
+#ROC_AUC
+res_D=logistf(formula=Group ~ DNAAF3, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_C=logistf(formula=Group ~ COLCA2, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_F=logistf(formula=Group ~ FAM83E, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+res_O=logistf(formula=Group ~ OSGIN2, family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+
+library(ROCR)
+# Calculate predicted probabilities for the test data
+prob_D <- predict(res_D, newdata = DF_blom, type = "link")
+prob_D <- exp(prob_D) / (1 + exp(prob_D))
+pred_D <- prediction(prob_D, DF_blom$Group)
+auc_D <- performance(pred_D, measure = "auc")@y.values[[1]]
+roc_D <- performance(pred_D, measure = "tpr", x.measure = "fpr")
+
+prob_C <- predict(res_C, newdata = DF_blom, type = "link")
+prob_C <- exp(prob_C) / (1 + exp(prob_C))
+pred_C <- prediction(prob_C, DF_blom$Group)
+auc_C <- performance(pred_C, measure = "auc")@y.values[[1]]
+roc_C <- performance(pred_C, measure = "tpr", x.measure = "fpr")
+
+prob_F <- predict(res_F, newdata = DF_blom, type = "link")
+prob_F <- exp(prob_F) / (1 + exp(prob_F))
+pred_F<- prediction(prob_F, DF_blom$Group)
+auc_F<- performance(pred_F, measure = "auc")@y.values[[1]]
+roc_F<- performance(pred_F, measure = "tpr", x.measure = "fpr")
+
+prob_O <- predict(res_O, newdata = DF_blom, type = "link")
+prob_O <- exp(prob_O) / (1 + exp(prob_O))
+pred_O<- prediction(prob_O, DF_blom$Group)
+auc_O<- performance(pred_O, measure = "auc")@y.values[[1]]
+roc_O<- performance(pred_O, measure = "tpr", x.measure = "fpr")
+
+tiff('ROC_AUC_reviese.tiff',width = 600, height = 600)
+par(mfrow=c(2,2))
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_D, main = "(A) DNAAF3",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.7,0.35, paste0("AUC:", round(auc_D,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_C, main = "(B) COLCA2",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.7,0.35, paste0("AUC:", round(auc_C,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_F, main = "(C) FAM83E",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.7,0.35, paste0("AUC:", round(auc_F,4), "\n"), col="red",cex=2)
+
+par(mar=c(4, 5, 4, 2))
+plot(roc_O, main = "(D) OSGIN2",cex.main = 2.3,cex.names = 2.3,cex.lab=2.3,font=1,cex.axis=2.3)
+abline(0, 1, lty = 2)
+text(0.7,0.35, paste0("AUC:", round(auc_O,4), "\n"), col="red",cex=2)
+
+dev.off()
+
+##################### swarmplot (vs Unhealthy) ###################################
+
+V <- DF
+wilcox.test(V[(V$Group == 1),]$DNAAF3,V[(V$Group == 2),]$DNAAF3)
+
+library(beeswarm)
+DNAAF3_C <- V[(V$Group == 1),]$DNAAF3
+DNAAF3_H <- V[(V$Group == 2),]$DNAAF3
+COLCA2_C <- V[(V$Group == 1),]$COLCA2
+COLCA2_H <- V[(V$Group == 2),]$COLCA2
+FAM83E_C <- V[(V$Group == 1),]$FAM83E
+FAM83E_H <- V[(V$Group == 2),]$FAM83E
+OSGIN2_C <- V[(V$Group == 1),]$OSGIN2
+OSGIN2_H <- V[(V$Group == 2),]$OSGIN2
+
+##############################
+
+tiff('beeswarm_Unhealthy.tiff',width = 1200, height = 1200)
+par(mfrow=c(2,2))
+
+par(mar=c(8, 5, 4, 2))
+boxplot(DNAAF3_H,DNAAF3_C, main = "(A) DNAAF3",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(DNAAF3_H,DNAAF3_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Unhealthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(COLCA2_H,COLCA2_C, main = "(B) COLCA2",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(COLCA2_H,COLCA2_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Unhealthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(FAM83E_H,FAM83E_C, main = "(C) FAM83E",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(FAM83E_H,FAM83E_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Unhealthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(OSGIN2_H,OSGIN2_C, main = "(D) OSGIN2",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names= 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(OSGIN2_H,OSGIN2_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Unhealthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+dev.off()
+####################################
+##################### swarmplot (vs Healthy) ###################################
+
+df <- read.csv('Flontier_all_AG.csv',header=T,row.names=1)
+V <- df
+wilcox.test(V[(V$Group == 1),]$DNAAF3,V[(V$Group == 2),]$DNAAF3)
+
+library(beeswarm)
+DNAAF3_C <- V[(V$Group == 2),]$DNAAF3
+DNAAF3_H <- V[(V$Group == 0),]$DNAAF3
+COLCA2_C <- V[(V$Group == 2),]$COLCA2
+COLCA2_H <- V[(V$Group == 0),]$COLCA2
+FAM83E_C <- V[(V$Group == 2),]$FAM83E
+FAM83E_H <- V[(V$Group == 0),]$FAM83E
+OSGIN2_C <- V[(V$Group == 2),]$OSGIN2
+OSGIN2_H <- V[(V$Group == 0),]$OSGIN2
+
+##############################
+
+tiff('beeswarm_Healthy.tiff',width = 1200, height = 1200)
+par(mfrow=c(2,2))
+
+par(mar=c(8, 5, 4, 2))
+boxplot(DNAAF3_H,DNAAF3_C, main = "(A) DNAAF3",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(DNAAF3_H,DNAAF3_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(COLCA2_H,COLCA2_C, main = "(B) COLCA2",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(COLCA2_H,COLCA2_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(FAM83E_H,FAM83E_C, main = "(C) FAM83E",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names = 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(FAM83E_H,FAM83E_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+par(mar=c(8, 5, 4, 2))
+boxplot(OSGIN2_H,OSGIN2_C, main = "(D) OSGIN2",ylab = "LogCPM",ylim=c(0,11), cex.main = 5,cex.names= 4,cex.lab=2.3,font=1,cex.axis=3,las=1)
+beeswarm(list(OSGIN2_H,OSGIN2_C),col = c("blue", "red"),method = "square", pch = 20,add = TRUE,cex = 2)
+labs <-  c("Healthy subjects","SARS-CoV-2")
+text(c(1,2),c(-2,-2),labels=labs,cex=3.5,srt=10,xpd=TRUE)
+lines(c(1,2),c(10.5,10.5))
+text(1.5,11,"***",cex=5)
+
+dev.off()
+####################################
