@@ -1,0 +1,159 @@
+raw <- read.csv('DIS_REP_vE_Group.csv',header=T,row.names=1)
+Int <- rownames(read.csv('Supple_table_1.csv',header=T,row.names=1))
+DF <- raw[,Int]
+DF$Group <- raw$Group
+
+################# Elbow method ###########################
+library(cluster)
+library(factoextra)
+tiff('elbow.tiff',width =600,height=600,units='px')
+fviz_nbclust(DF[,1:48], kmeans, method = "wss")
+dev.off()
+
+################# Hierarchical clustering ################
+dx <- dist(t(DF[,1:48]))
+rc <- hclust(d=dx,method='ward.D')
+tiff('dendrogram_4.tiff',width =1000,height=600,units='px')
+plot(rc,cex=2)
+rect.hclust(rc, k=4, border=1:4)
+dev.off()
+
+################# Blom function ##########################
+library(rcompanion)
+L<-seq(1,48,1)
+func <- function(c){
+    res <- blom(DF[,c],method='blom')
+    return(res)
+}
+DF_blom <- data.frame(sapply(L,func))
+colnames(DF_blom) <- Int
+
+library(tidyverse)
+group_LR <- raw$Group %>% str_replace_all(c("2" = "0"))
+group_LR <- as.numeric(noquote(group_LR))
+DF_blom$Group <- group_LR
+
+library(corrplot)
+DF_blom_corr <- DF_blom[,1:48][,rc$order] 
+res_pearson <- cor(DF_blom_corr, method = "pearson")
+res_spearman <- cor(DF_blom_corr, method = "spearman")
+
+png(height=2000, width=2000, pointsize=15, file="corrplot_pearson.png")
+corrplot(corr = res_pearson, type="upper", addCoef.col="black" )
+dev.off()
+
+png(height=2000, width=2000, pointsize=15, file="corrplot_spearman.png")
+corrplot(corr = res_spearman, type="upper", addCoef.col="black" )
+dev.off()
+################# Firth Logistic regression ###############
+library(logistf)
+
+firth_result=function(c){
+res_f=logistf(DF_blom$Group~DF_blom[,c], family=binomial, data=DF_blom, firth=TRUE,control=logistf.control(maxit=10000),pl=FALSE)
+OR=round(log10(exp(res_f$ coefficients[2])),2)
+LowerCL=round(log10(exp(res_f$ ci.lower[2])),2)
+UpperCL=round(log10(exp(res_f$ ci.upper[2])),2)
+Pvalue=res_f$ prob[2]
+result=cbind(OR,LowerCL,UpperCL,Pvalue)
+return(result)
+}
+L48 <- seq(1,48,1)
+multi <- sapply(L48,firth_result)
+M <- data.frame(t(multi))
+rownames(M) <- Int
+write.csv(M,'DEG48_Firth_uni_log10.csv',quote=F)
+
+##################### Volcano plot ##########################
+
+dis <- read.csv('FC_all.csv',header=T,row.names=1)
+rep <- read.csv('DE48.csv',header=T,row.names=1)
+
+fold_changes <- dis$logFC
+pvalues <- -log10(dis$P.Value)
+
+point_type = 20
+point_size = 1.5
+palette <- c(rgb(0, 0, 0, max = 255, alpha = 65),
+    rgb(0, 0, 255, max = 255, alpha = 125),
+    rgb(255, 0, 0, max = 255, alpha = 125))
+    
+UP_list <- rownames(rep[rep$logFC_rep>0,])
+DOWN_list <- rownames(rep[rep$logFC_rep<0,])
+annotation_risk <- c('DNAAF3', 'COLCA2', 'FAM83E')
+annotation_protective <- c('OSGIN2')
+
+### up ###
+fc_up <- dis[UP_list,]$logFC
+pval_up <- -log10(dis[UP_list,]$P.Value)
+### down ###
+fc_down <- dis[DOWN_list,]$logFC
+pval_down <- -log10(dis[DOWN_list,]$P.Value)
+
+interesting_genes <- c('DNAAF3', 'COLCA2', 'FAM83E','OSGIN2')
+fc_interesting_genes <- dis[interesting_genes,]$logFC
+pval_interesting_genes <- -log10(dis[interesting_genes,]$P.Value)
+downfc <- dis[annotation_protective,]$logFC
+downp <- -log10(dis[annotation_protective,]$P.Value)
+upfc <- dis[annotation_risk,]$logFC
+upp <- -log10(dis[annotation_risk,]$P.Value)
+
+### plotting ###
+tiff('volcano.tiff',width =600,height=600,units='px')
+par(mar=c(4, 5, 4, 2))
+plot(fold_changes, pvalues,cex.lab=2,
+     pch = point_type, cex = point_size, col = palette[1],
+     xlab = "log2 fold change", ylab = "-log10 p_value",
+     xlim = c(-10,12), ylim = c(0, 15))
+abline(v=2, lty=2)
+abline(v=-2, lty=2)
+abline(h=-log10(0.05/10972), lty=2)
+points(fc_down, pval_down,
+       pch = point_type, cex = point_size, col = palette[2])
+points(fc_up, pval_up,
+       pch = point_type, cex = point_size, col = palette[3])
+points(downfc, downp, pch = 20, cex = 4,col = palette[2])
+points(upfc, upp, pch = 20, cex = 4,col = palette[3])
+labelx <- c(10,10,10,-8)
+labely <- c(6,14,8,10)
+labelxx <- c(10,10,10,-8)
+labelyy <- c(6.5,13.5,8.5,9.5)
+
+text(labelx[1], labely[1], 'DBAAF3', cex=2, col='red')
+text(labelx[2], labely[2], 'COLCA2', cex=2, col='red')
+text(labelx[3], labely[3], 'FAM83E', cex=2, col='red')
+text(labelx[4], labely[4], 'OSGIN2', cex=2, col='blue')
+
+for(i in 1:4){
+    lines(c(labelxx[i], fc_interesting_genes[i]), c(labelyy[i], pval_interesting_genes[i]))
+}
+dev.off()
+
+###################### Logistic_bar ##################################
+
+library(ggplot2)
+library(dplyr)
+
+log10OR <- c(1.17,1.06,1.06,-1.02)
+log10LCI <- c(0.67,0.6,0.61,-1.46)
+log10UCI <- c(1.68,1.51,1.52,-0.58)
+
+d.conf <- data.frame(log10OR,log10LCI,log10UCI)
+rownames(d.conf) <- c('DNAAF3','COLCA2','FAM83E','OSGIN2')
+A <- ggplot(d.conf, 
+aes(log10OR,row.names(d.conf)))+
+geom_point(aes(size=10),show.legend = FALSE)+
+geom_errorbar(aes(xmin = log10LCI, xmax = log10UCI),width =0.3,size = 1) +
+geom_vline(xintercept = 0,linetype ='dashed')+
+labs(title = "",x = "log10(OR)", y = "")+
+scale_y_discrete(limit=c('OSGIN2','FAM83E','COLCA2','DNAAF3'))
+
+tiff('Figure_log10OR.tiff',width = 600, height = 600)
+B<- theme(panel.background = element_rect(fill = 'white'), text = element_text(size = 30),axis.text = element_text(size = 30,colour='black'),)
+C<- theme_classic(base_size = 40)
+A+C+B
+dev.off()
+
+
+
+
+
