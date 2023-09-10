@@ -255,7 +255,7 @@ DF_blom_dis$Group <- GROUP_D
 lasso.model_dis <- glmnet(x = DF_blom_dis[,1:466], y = DF_blom_dis[,467], family = "gaussian", alpha = 1)
 LASSO_dis <- as.data.frame(as.matrix(lasso.model_dis$beta))
 rownames(LASSO_dis) <- colnames(DF_blom_dis[,1:466])
-LASSO_dis_30 <- rownames(LASSO[LASSO$s75 > 0,])　　　# DEG30
+LASSO_dis_30 <- rownames(LASSO_dis[LASSO_dis$s75 > 0,])　　　# DEG30
 
 # Replication_panel_analysis
 BATCH_R <- REP$Batch
