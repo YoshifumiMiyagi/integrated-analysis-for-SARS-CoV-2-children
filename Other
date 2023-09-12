@@ -60,8 +60,8 @@ dev.off()
 
 #################### LASSO_revise_Supple ##############################
 
-L_coef <- data.frame(LASSO[LASSO$s99 > 0,][,100])
-rownames(L_coef) <- rownames(LASSO[LASSO$s99>0,])
+L_coef <- data.frame(LASSO[abs(LASSO$s99) > 0,][,100])
+rownames(L_coef) <- rownames(LASSO[abs(LASSO$s99)>0,])
 LASSO_result <- rownames(L_coef)
 
 
