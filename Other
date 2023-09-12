@@ -57,3 +57,10 @@ res_spearman <- cor(DFcor, method = "spearman")
 png(height=2000, width=2000, pointsize=15, file="corrplot.png")
 corrplot(corr = res_spearman, type="upper", addCoef.col="black" )
 dev.off()
+
+#################### LASSO_revise_final ##############################
+L_coef <- data.frame(LASSO_dis[LASSO_dis$s75 > 0,][,76])
+rownames(L_coef) <- rownames(LASSO_dis[LASSO_dis$s75>0,])
+
+LASSO_result <- rownames(L_coef)
+LASSO_rep <- DEG_rep[LASSO_result,]
