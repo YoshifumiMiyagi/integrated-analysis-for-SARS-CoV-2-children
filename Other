@@ -60,8 +60,8 @@ dev.off()
 
 #################### LASSO_revise_Supple ##############################
 
-L_coef <- data.frame(LASSO_dis[LASSO_dis$s75 > 0,][,76])
-rownames(L_coef) <- rownames(LASSO_dis[LASSO_dis$s75>0,])
+L_coef <- data.frame(LASSO[LASSO$s99 > 0,][,100])
+rownames(L_coef) <- rownames(LASSO[LASSO$s99>0,])
 LASSO_result <- rownames(L_coef)
 
 
@@ -89,4 +89,5 @@ LASSO_rep <- CC[LASSO_result,]
 
 L1 <- DEG_dis[LASSO_result,]
 LA <- cbind(L1,LASSO_rep,L_coef)
+
 
