@@ -58,9 +58,35 @@ png(height=2000, width=2000, pointsize=15, file="corrplot.png")
 corrplot(corr = res_spearman, type="upper", addCoef.col="black" )
 dev.off()
 
-#################### LASSO_revise_final ##############################
+#################### LASSO_revise_Supple ##############################
+
 L_coef <- data.frame(LASSO_dis[LASSO_dis$s75 > 0,][,76])
 rownames(L_coef) <- rownames(LASSO_dis[LASSO_dis$s75>0,])
-
 LASSO_result <- rownames(L_coef)
+
+
+# Replication_panel_analysis
+BATCH_R <- REP$Batch
+GROUP_R <- REP$Group
+
+rep_C <- t(REP)
+count <- as.matrix(rep_C)
+adjusted_counts <- ComBat_seq(count, batch=BATCH_R,group=GROUP_R)
+design <- model.matrix(~0+factor(GROUP_R))
+count <- adjusted_counts
+keep <- rowSums(cpm(count)>1) > dim(rep_C)[2]*0.5
+d <- DGEList(counts=count)
+counts <- d[keep, , keep.lib.sizes=FALSE]
+v <- voomWithQualityWeights(counts, plot=TRUE, normalize="quantile", design=design)
+colnames(design) <- c("C_Case","C_Ctrl")
+contrasts <- makeContrasts(C_Case-C_Ctrl, levels=design)
+fit <- lmFit(v,design)
+fit2 <- contrasts.fit(fit,contrasts)
+fit2 <- eBayes(fit2)
+CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
+DEG_rep <- CC[(abs(CC$logFC)>1 & CC$P.Value < 0.05),] 
 LASSO_rep <- DEG_rep[LASSO_result,]
+
+L1 <- DEG_dis[LASSO_result,]
+LA <- cbind(L1,LASSO_rep,L_coef)
+
