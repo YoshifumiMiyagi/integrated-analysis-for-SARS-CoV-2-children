@@ -16,9 +16,55 @@ DF_blom <- data.frame(sapply(L,func))
 
 # LASSO
 library(glmnet)
-lasso.model <- glmnet(x = DF_blom, y = DF[,1], family = "gaussian", alpha = 1)
+lasso.model <- glmnet(DF_blom, GROUP_D, family = "binomial", alpha = 1)
 LASSO <- as.data.frame(as.matrix(lasso.model$beta))
 rownames(LASSO) <- colnames(DF[,2:453])
 
 rownames(LASSO[LASSO$s1 > 0,])
 rownames(LASSO[LASSO$s25 > 0,])
+
+###### LASSO_CV ###############
+# Discovery_panel_analysis
+BATCH_D <- DIS$Batch
+GROUP_D <- DIS$Group
+dis_C <- t(DIS)
+count <- as.matrix(dis_C[7:17620,])
+adjusted_counts <- ComBat_seq(count, batch=BATCH_D,group=GROUP_D)
+design <- model.matrix(~0+factor(GROUP_D))
+count <- adjusted_counts
+keep <- rowSums(cpm(count)>1) > dim(dis_C)[2]*0.5
+d <- DGEList(counts=count)
+counts <- d[keep, , keep.lib.sizes=FALSE]
+v <- voomWithQualityWeights(counts, plot=TRUE, normalize="quantile", design=design)
+colnames(design) <- c("C_Case","C_Ctrl")
+contrasts <- makeContrasts(C_Case-C_Ctrl, levels=design)
+fit <- lmFit(v,design)
+fit2 <- contrasts.fit(fit,contrasts)
+fit2 <- eBayes(fit2)
+CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
+DEG_dis <- CC[(abs(CC$logFC)>2 & CC$adj.P.Val < 0.05),]
+DEG466 <- rownames(DEG_dis)
+DF <- data.frame(t(v$E))[,DEG466]
+
+library(rcompanion)
+L<-seq(1,466,1)
+func <- function(c){
+    res <- blom(DF[,c],method='blom')
+    return(res)
+}
+DF_blom <- data.frame(sapply(L,func))
+colnames(DF_blom) <- DEG466
+
+
+pfit = glmnet(DF_blom, GROUP_D, family = "binomial") 
+plot(pfit, label = TRUE) # please include this plot in the  output
+cvfit = cv.glmnet(as.matrix(DF_blom), GROUP_D, family = "binomial", alpha = 1,nfolds = 2) 
+plot(cvfit)
+cvfit$lambda.min
+cvfit$lambda.1se #Now, we obtain the minimum lambda for the data set analyzed
+coef.min = coef(cvfit, s = "lambda.min")
+active.min = which(coef.min != 0)
+index.min = coef.min[active.min]
+index.min
+active.min
+coef.min #  showing Coeffients 
