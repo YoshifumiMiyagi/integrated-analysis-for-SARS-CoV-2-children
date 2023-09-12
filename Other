@@ -85,7 +85,7 @@ fit2 <- contrasts.fit(fit,contrasts)
 fit2 <- eBayes(fit2)
 CC <- topTable(fit2,coef="C_Case - C_Ctrl", number=Inf, adjust="bon", sort.by="P")
 DEG_rep <- CC[(abs(CC$logFC)>1 & CC$P.Value < 0.05),] 
-LASSO_rep <- DEG_rep[LASSO_result,]
+LASSO_rep <- CC[LASSO_result,]
 
 L1 <- DEG_dis[LASSO_result,]
 LA <- cbind(L1,LASSO_rep,L_coef)
