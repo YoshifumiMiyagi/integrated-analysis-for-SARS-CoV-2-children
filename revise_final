@@ -73,7 +73,7 @@ pvalues <- -log10(dis$P.Value)
 
 point_type = 20
 point_size = 1.5
-palette <- c(rgb(0, 0, 0, max = 255, alpha = 65),
+palette <- c(rgb(128, 128, 128, max = 255, alpha = 65),
     rgb(0, 0, 255, max = 255, alpha = 125),
     rgb(255, 0, 0, max = 255, alpha = 125))
     
